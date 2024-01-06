@@ -7,7 +7,6 @@ import (
 )
 
 func Setup(app *fiber.App) {
-	// create routers
 	// static achives
 	app.Static("/uploads", "./uploads")
 	// auth routers
@@ -20,6 +19,6 @@ func Setup(app *fiber.App) {
 	app.Delete("/api/user/profile", controllers.Delete)
 	app.Post("/api/user/update", controllers.UpdateUser)
 	// upload images
-	app.Post("/api/imageProfile", controllers.ImageProfileUpload)
-	app.Post("/api/imageWallpaper", controllers.ImageWallpaperUpload)
+	app.Post("/api/image_profile", controllers.ImageProfileUpload)
+	app.Post("/api/image_wallpaper", controllers.ImageWallpaperUpload)
 }

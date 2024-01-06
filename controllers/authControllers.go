@@ -4,6 +4,7 @@ import (
 	"medium_api/database"
 	"medium_api/models"
 	"medium_api/utilities"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,8 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const SecretKey = "iaoiwjdaojwdoiciwoeinow"
-
+// Register user
 func Register(c *fiber.Ctx) error {
 
 	var data map[string]string
@@ -31,12 +31,16 @@ func Register(c *fiber.Ctx) error {
 		error_validation["surname"] = "Surname is invalid"
 	}
 
-	if !utilities.ValidateEmail(data["email"]) {
+	if !utilities.IsValidEmail(data["email"]) {
 		error_validation["email"] = "E-mail is invalid"
 	}
 
-	if !utilities.ValidatePassword(data["password"]) {
+	if !utilities.IsValidPassword(data["password"]) {
 		error_validation["password"] = "Password is invalid"
+	}
+
+	if data["app"] == "" {
+		error_validation["app"] = "App is invalid"
 	}
 
 	if len(error_validation) != 0 {
@@ -46,14 +50,21 @@ func Register(c *fiber.Ctx) error {
 	// hash of password
 	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
 
+	// format number
+	replacer := strings.NewReplacer("(", "", ")", "", "-", "", " ", "")
+	mobile := replacer.Replace(data["mobile"])
+
 	user := models.User{
 		Id:        uuid.New().String(),
 		Name:      data["name"],
 		Surname:   data["surname"],
-		Email:     data["email"],
-		Mobile:    data["mobile"],
+		Email:     strings.ToLower(data["email"]),
+		Mobile:    strings.TrimSpace(mobile),
 		Password:  password,
 		CreatedAt: utilities.DateTimeNow(),
+		Apps: []models.App{
+			{Id: data["app"]},
+		},
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -61,11 +72,16 @@ func Register(c *fiber.Ctx) error {
 			error_validation["email"] = "E-mail already registered"
 			return c.Status(400).JSON(error_validation)
 		}
+		if err.Error() == "UNIQUE constraint failed: users.mobile" {
+			error_validation["mobile"] = "Mobile already registered"
+			return c.Status(400).JSON(error_validation)
+		}
 	}
 
 	return c.JSON(user)
 }
 
+// Login
 func Login(c *fiber.Ctx) error {
 
 	var data map[string]string
@@ -88,14 +104,14 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.RegisteredClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Issuer:    user.Id,
 		ExpiresAt: jwt.NewNumericDate(utilities.DateTimeNowAddHours(24)),
 	})
 
-	token, err := claims.SignedString([]byte(SecretKey))
-
+	token, err := claims.SignedString([]byte(utilities.GoDotEnvVariable("SECRETKEY")))
 	if err != nil {
+		print(err.Error())
 		c.Status(fiber.StatusInternalServerError)
 		return c.Status(404).JSON(fiber.Map{
 			"message": "Could not login",
@@ -103,15 +119,17 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	utilities.AuthorizedToken(token)
+
 	return c.JSON(fiber.Map{
 		"token":   token,
 		"expires": utilities.DateTimeNowAddHours(24),
 	})
 }
 
+// Logs the user out
 func Logout(c *fiber.Ctx) error {
 
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -119,6 +137,7 @@ func Logout(c *fiber.Ctx) error {
 			"message": "unauthenticated",
 		})
 	}
+
 	utilities.UnauthorizedToken(token.Raw)
 
 	return c.JSON(fiber.Map{

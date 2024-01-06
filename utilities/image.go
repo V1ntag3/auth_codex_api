@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Transform base64 in image
 func Base64ToImage(base64String, filename string) error {
 	// decode a base64 string
 	data, err := base64.StdEncoding.DecodeString(base64String)

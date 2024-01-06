@@ -27,8 +27,8 @@ func ContainsNumber(str string) bool {
 	return false
 }
 
-// verify email
-func ValidateEmail(email string) bool {
+// Verify if email is valid
+func IsValidEmail(email string) bool {
 
 	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	match, _ := regexp.MatchString(regex, email)
@@ -42,7 +42,7 @@ func ValidateEmail(email string) bool {
 // min 1 special character
 // min 1 uppercase
 // min 1 number
-func ValidatePassword(password string) bool {
+func IsValidPassword(password string) bool {
 	reLen := `.{8,}$`
 	reUpperCase := `.*([A-Z]+).*$`
 	reSpecialChar := `(.*[!#@$%&]+).*`

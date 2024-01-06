@@ -12,7 +12,7 @@ import (
 // User data
 func Profile(c *fiber.Ctx) error {
 
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -21,11 +21,13 @@ func Profile(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := token.Claims.(*jwt.RegisteredClaims)
+	claims := token.Claims.(*jwt.MapClaims)
+
+	user_id, _ := claims.GetIssuer()
 
 	var user models.User
 
-	if err := database.DB.Select("id, name, surname, about, date_member, email, mobile, image_profile").Where("id = ?", claims.Issuer).First(&user).Error; err != nil {
+	if err := database.DB.Select("*").Where("id = ?", user_id).Preload("Apps").First(&user).Error; err != nil {
 		return fiber.ErrNotFound
 	}
 
@@ -35,18 +37,9 @@ func Profile(c *fiber.Ctx) error {
 // User data by id
 func UserDataById(c *fiber.Ctx) error {
 
-	// _, err := utilities.IsAuthenticadToken(c, SecretKey)
-
-	// if err != nil {
-	// 	c.Status(fiber.StatusUnauthorized)
-	// 	return c.JSON(fiber.Map{
-	// 		"message": "unauthenticated",
-	// 	})
-	// }
-
 	var user models.User
 
-	if err := database.DB.Select("id, name, surname, about, date_member, email, image_profile").Where("id = ?", c.Params("id")).First(&user).Error; err != nil {
+	if err := database.DB.Select("id, name, surname, about, email, image").Where("id = ?", c.Params("id")).First(&user).Error; err != nil {
 		return fiber.ErrNotFound
 	}
 
@@ -56,7 +49,7 @@ func UserDataById(c *fiber.Ctx) error {
 // Update name, surname and about
 func UpdateUser(c *fiber.Ctx) error {
 
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -82,6 +75,10 @@ func UpdateUser(c *fiber.Ctx) error {
 		user.Name = data["name"]
 	}
 
+	if !utilities.OnlyEmptySpaces(data["mobile"]) {
+		user.Name = data["mobile"]
+	}
+
 	if !utilities.OnlyEmptySpaces(data["surname"]) {
 		user.Surname = data["surname"]
 	}
@@ -100,7 +97,7 @@ func UpdateUser(c *fiber.Ctx) error {
 // Delete user
 func Delete(c *fiber.Ctx) error {
 
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -115,6 +112,11 @@ func Delete(c *fiber.Ctx) error {
 
 	if err := database.DB.Where("id = ?", claims.Issuer).First(&user).Delete(&user).Error; err != nil {
 		return fiber.ErrNotFound
+	}
+
+	user.DeleteAt = utilities.DateTimeNow()
+	if err := database.DB.Save(&user).Error; err != nil {
+		return fiber.ErrInternalServerError
 	}
 
 	utilities.UnauthorizedToken(token.Raw)

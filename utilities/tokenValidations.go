@@ -5,7 +5,7 @@ import (
 	"medium_api/models"
 )
 
-// Função para remover um token
+// Remove token
 func UnauthorizedToken(token string) {
 
 	var revokeToken models.ValidToken
@@ -13,10 +13,9 @@ func UnauthorizedToken(token string) {
 	revokeToken.Token = token
 
 	database.DB.Where("token = ?", token).First(&revokeToken).Delete(&revokeToken)
-
 }
 
-// Função para cadastrar um token válido
+// Register a valid token
 func AuthorizedToken(token string) {
 
 	var revokeToken models.ValidToken
@@ -27,7 +26,7 @@ func AuthorizedToken(token string) {
 
 }
 
-// Função para verificar se um token está revogado
+// Check if a token is not revoked
 func IsAuthorizedToken(token string) bool {
 
 	var ValidToken models.ValidToken

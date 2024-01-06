@@ -16,7 +16,7 @@ import (
 
 func ImageProfileUpload(c *fiber.Ctx) error {
 
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
@@ -83,7 +83,7 @@ func ImageProfileUpload(c *fiber.Ctx) error {
 
 func ImageWallpaperUpload(c *fiber.Ctx) error {
 	// validate user
-	token, err := utilities.IsAuthenticadToken(c, SecretKey)
+	token, err := utilities.IsAuthenticadToken(c, utilities.GoDotEnvVariable("SECRETKEY"))
 
 	if err != nil {
 		c.Status(fiber.StatusUnauthorized)

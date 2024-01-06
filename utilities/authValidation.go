@@ -2,13 +2,30 @@ package utilities
 
 import (
 	"errors"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
-// Verifica se o token está autorizado
+// use godot package to load/read the .env file and
+// return the value of the key
+func GoDotEnvVariable(key string) string {
+
+	// load .env file
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	return os.Getenv(key)
+}
+
+// Checks if the token is authorized
 func IsAuthenticadToken(c *fiber.Ctx, SecretKey string) (*jwt.Token, error) {
 
 	reqToken := c.Get("Authorization")

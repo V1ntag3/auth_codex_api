@@ -7,8 +7,14 @@ require github.com/gofiber/fiber/v2 v2.47.0
 require golang.org/x/crypto v0.10.0
 
 require (
+	github.com/cespare/reflex v0.3.1 // indirect
+	github.com/creack/pty v1.1.11 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/golang-jwt/jwt/v5 v5.1.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
