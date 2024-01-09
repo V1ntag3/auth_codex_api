@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"medium_api/database"
-	"medium_api/models"
-	"medium_api/utilities"
+	"auth_codex_api/database"
+	"auth_codex_api/html"
+	"auth_codex_api/models"
+	"auth_codex_api/utilities"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -77,6 +78,7 @@ func Register(c *fiber.Ctx) error {
 			return c.Status(400).JSON(error_validation)
 		}
 	}
+	html.HtmlEmailVerify(data["email"], user)
 
 	return c.JSON(user)
 }

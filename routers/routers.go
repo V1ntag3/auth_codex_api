@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"medium_api/controllers"
+	"auth_codex_api/controllers"
 
 	"github.com/gofiber/fiber/v2"
 )

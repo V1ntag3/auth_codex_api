@@ -1,10 +1,10 @@
 package test
 
 import (
+	"auth_codex_api/database"
+	"auth_codex_api/routers"
 	"bytes"
 	"encoding/json"
-	"medium_api/database"
-	"medium_api/routers"
 	"net/http/httptest"
 	"testing"
 

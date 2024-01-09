@@ -1,4 +1,4 @@
-module medium_api
+module auth_codex_api
 
 go 1.18
 

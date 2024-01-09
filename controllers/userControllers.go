@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"medium_api/database"
-	"medium_api/models"
-	"medium_api/utilities"
+	"auth_codex_api/database"
+	"auth_codex_api/models"
+	"auth_codex_api/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"

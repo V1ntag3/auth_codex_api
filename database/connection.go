@@ -1,8 +1,8 @@
 package database
 
 import (
+	"auth_codex_api/models"
 	"log"
-	"medium_api/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

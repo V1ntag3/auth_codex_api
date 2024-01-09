@@ -1,8 +1,8 @@
 package utilities
 
 import (
-	"medium_api/database"
-	"medium_api/models"
+	"auth_codex_api/database"
+	"auth_codex_api/models"
 )
 
 // Remove token

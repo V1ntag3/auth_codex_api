@@ -1,9 +1,9 @@
 package main
 
 import (
+	"auth_codex_api/database"
+	"auth_codex_api/routers"
 	"log"
-	"medium_api/database"
-	"medium_api/routers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

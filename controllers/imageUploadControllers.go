@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"auth_codex_api/database"
+	"auth_codex_api/models"
+	"auth_codex_api/utilities"
 	"fmt"
 	"log"
-	"medium_api/database"
-	"medium_api/models"
-	"medium_api/utilities"
 	"os"
 	"strings"
 
